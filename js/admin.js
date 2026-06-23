@@ -34,6 +34,32 @@ const Admin = {
         <button class="btn-blue mini" style="margin-top:12px" id="saveSettings">Save Settings</button>
       </div>
 
+      <!-- HERO CAROUSEL -->
+      <div class="panel">
+        <h3>Hero Carousel Slides</h3>
+        <div style="overflow-x:auto">
+          <table class="admin-table">
+            <thead><tr><th>Img</th><th>Heading</th><th>Text</th><th>Links to</th><th>Actions</th></tr></thead>
+            <tbody id="slideRows"></tbody>
+          </table>
+        </div>
+        <h3 style="margin-top:18px;font-size:14px" id="slideFormTitle">Add New Slide</h3>
+        <div class="form-grid">
+          <div class="field"><label>Heading</label><input id="sHeading"></div>
+          <div class="field"><label>Text</label><input id="sText"></div>
+          <div class="field"><label>Links to category (optional)</label><select id="sLink"></select></div>
+          <div class="field"><label>Image</label>
+            <input id="sImgUrl" placeholder="Paste image URL">
+            <input id="sImgFile" type="file" accept="image/*" style="margin-top:6px">
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button class="btn-blue mini" id="saveSlide">Save Slide</button>
+          <button class="btn-outline mini" id="cancelSlide" style="display:none">Cancel</button>
+          <span id="sPreviewWrap" style="margin-left:auto"></span>
+        </div>
+      </div>
+
       <!-- CATEGORIES -->
       <div class="panel">
         <h3>Categories</h3>
@@ -83,8 +109,11 @@ const Admin = {
     this.bind();
     this.renderCats();
     this.renderCatSelect();
+    this.renderSlideLinkSelect();
+    this.renderSlideRows();
     this.renderRows();
     this.resetForm();
+    this.resetSlideForm();
   },
 
   bind() {
@@ -109,6 +138,87 @@ const Admin = {
       reader.onload = () => { $('#pImgUrl').value = reader.result; this.previewImg(reader.result); };
       reader.readAsDataURL(file);
     };
+
+    // ---- slide form ----
+    $('#saveSlide').onclick = () => this.saveSlide();
+    $('#cancelSlide').onclick = () => this.resetSlideForm();
+    $('#sImgUrl').oninput = () => this.previewSlideImg($('#sImgUrl').value);
+    $('#sImgFile').onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { $('#sImgUrl').value = reader.result; this.previewSlideImg(reader.result); };
+      reader.readAsDataURL(file);
+    };
+  },
+
+  /* ---- carousel slides ---- */
+  editingSlide: null,
+
+  renderSlideLinkSelect() {
+    $('#sLink').innerHTML = `<option value="">— none —</option>` +
+      Store.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+  },
+
+  renderSlideRows() {
+    $('#slideRows').innerHTML = Store.slides.map((sl, i) => `
+      <tr>
+        <td><img src="${sl.img}" alt=""></td>
+        <td>${sl.heading || '—'}</td>
+        <td>${sl.text || '—'}</td>
+        <td>${sl.link ? `<span class="tag">${sl.link}</span>` : '—'}</td>
+        <td class="row-actions">
+          <button class="btn-outline mini" data-editslide="${i}">Edit</button>
+          <button class="btn-danger mini" data-delslide="${i}">Delete</button>
+        </td>
+      </tr>`).join('') || `<tr><td colspan="5" class="empty">No slides. Add one below.</td></tr>`;
+    $$('[data-editslide]').forEach(b => b.onclick = () => this.editSlide(+b.dataset.editslide));
+    $$('[data-delslide]').forEach(b => b.onclick = () => {
+      if (confirm('Delete this slide?')) { Store.deleteSlide(+b.dataset.delslide); this.renderSlideRows(); toast('Slide deleted'); }
+    });
+  },
+
+  previewSlideImg(src) {
+    $('#sPreviewWrap').innerHTML = src
+      ? `<img src="${src}" style="width:80px;height:40px;object-fit:cover;border:1px solid var(--line);border-radius:4px">`
+      : '';
+  },
+
+  editSlide(i) {
+    const sl = Store.slides[i];
+    if (!sl) return;
+    this.editingSlide = i;
+    $('#slideFormTitle').textContent = 'Edit Slide';
+    $('#sHeading').value = sl.heading || '';
+    $('#sText').value = sl.text || '';
+    $('#sLink').value = sl.link || '';
+    $('#sImgUrl').value = sl.img || '';
+    $('#cancelSlide').style.display = 'inline-block';
+    this.previewSlideImg(sl.img);
+  },
+
+  saveSlide() {
+    const heading = $('#sHeading').value.trim();
+    const data = {
+      heading,
+      text: $('#sText').value.trim(),
+      link: $('#sLink').value,
+      img: $('#sImgUrl').value.trim() || ph(heading.slice(0, 12) || 'Slide', Store.settings.themeColor),
+    };
+    if (this.editingSlide !== null) { Store.updateSlide(this.editingSlide, data); toast('Slide updated'); }
+    else { Store.addSlide(data); toast('Slide added'); }
+    this.resetSlideForm();
+    this.renderSlideRows();
+  },
+
+  resetSlideForm() {
+    this.editingSlide = null;
+    $('#slideFormTitle').textContent = 'Add New Slide';
+    ['sHeading', 'sText', 'sImgUrl'].forEach(id => { const el = $('#' + id); if (el) el.value = ''; });
+    const f = $('#sImgFile'); if (f) f.value = '';
+    if ($('#sLink')) $('#sLink').value = '';
+    $('#cancelSlide').style.display = 'none';
+    $('#sPreviewWrap').innerHTML = '';
   },
 
   previewImg(src) {

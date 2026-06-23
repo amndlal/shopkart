@@ -1,5 +1,5 @@
 /* Simple offline cache so the app works without a network once visited. */
-const CACHE = 'shopkart-v1';
+const CACHE = 'shopkart-v2';
 const ASSETS = [
   './', './index.html', './manifest.json', './icon.svg',
   './css/style.css', './js/store.js', './js/data.js', './js/app.js', './js/admin.js',

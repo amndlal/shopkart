@@ -21,6 +21,7 @@ const Store = {
     }
     // Make sure newer fields exist if upgrading from an old save
     this.state.settings ||= structuredClone(DEFAULT_DATA.settings);
+    this.state.slides ||= structuredClone(DEFAULT_DATA.slides);
     this.state.cart ||= [];
     this.state.wishlist ||= [];
     this.state.orders ||= [];
@@ -53,6 +54,12 @@ const Store = {
     this.state.wishlist = this.state.wishlist.filter(w => w !== id);
     this.save();
   },
+
+  // ---- slides (hero carousel) ----
+  get slides() { return this.state.slides; },
+  addSlide(slide) { this.state.slides.push(slide); this.save(); },
+  updateSlide(i, patch) { if (this.state.slides[i]) { Object.assign(this.state.slides[i], patch); this.save(); } },
+  deleteSlide(i) { this.state.slides.splice(i, 1); this.save(); },
 
   // ---- categories ----
   get categories() { return this.state.categories; },

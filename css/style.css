@@ -43,6 +43,27 @@ main{max-width:1280px;margin:0 auto;padding:16px;min-height:60vh}
 .banner h2{font-size:26px;margin-bottom:6px}
 .banner p{opacity:.95}
 
+/* ---------- HERO CAROUSEL ---------- */
+.carousel{position:relative;border-radius:8px;overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow);background:#fff}
+.carousel-track{display:flex;transition:transform .45s ease}
+.carousel-slide{position:relative;min-width:100%;cursor:pointer}
+.carousel-slide img{width:100%;height:280px;object-fit:cover;display:block}
+.carousel-caption{position:absolute;left:0;bottom:0;right:0;padding:22px 26px;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff}
+.carousel-caption h2{font-size:26px;margin-bottom:4px}
+.carousel-caption p{opacity:.95}
+.carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);color:#222;width:38px;height:38px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+.carousel-arrow:hover{background:#fff}
+.carousel-arrow.prev{left:12px}
+.carousel-arrow.next{right:12px}
+.carousel-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:7px}
+.carousel-dots button{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.6);transition:.2s}
+.carousel-dots button.active{background:#fff;width:22px;border-radius:5px}
+@media(max-width:768px){
+  .carousel-slide img{height:170px}
+  .carousel-caption h2{font-size:18px}
+  .carousel-caption{padding:14px 16px}
+}
+
 /* ---------- PRODUCT GRID ---------- */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 .card{background:var(--white);border-radius:6px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s;position:relative}

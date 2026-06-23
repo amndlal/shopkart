@@ -22,6 +22,11 @@ const DEFAULT_DATA = {
     currency: '₹',
     footer: 'ShopKart — built with ❤️. Free & open source.',
   },
+  slides: [
+    { img: ph('Big Savings Days', '#2874f0'), heading: 'Big Savings Days', text: 'Up to 80% OFF across every category', link: '' },
+    { img: ph('Latest Mobiles', '#388e3c'), heading: 'Latest 5G Mobiles', text: 'Top brands starting ₹18,999', link: 'Mobiles' },
+    { img: ph('Fashion Sale', '#ff9f00'), heading: 'Fashion Fiesta', text: 'Flat 50% off on trending styles', link: 'Fashion' },
+  ],
   categories: ['Electronics', 'Fashion', 'Home', 'Mobiles', 'Appliances', 'Toys'],
   products: [
     { id: 'p1', title: 'Wireless Bluetooth Headphones', brand: 'BoomAudio', category: 'Electronics',

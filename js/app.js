@@ -81,17 +81,90 @@ function renderHome() {
   const heading = searchTerm ? `Results for "${searchTerm}"`
     : activeCategory === 'All' ? 'Top Deals For You' : activeCategory;
 
+  const showHero = activeCategory === 'All' && !searchTerm;
   $('#view').innerHTML = `
-    ${activeCategory === 'All' && !searchTerm ? `
-      <div class="banner">
-        <h2>${s.tagline}</h2>
-        <p>${s.bannerText}</p>
-      </div>` : ''}
+    ${showHero ? carouselMarkup() : ''}
     <h2 class="section-title">${heading}</h2>
     ${list.length ? `<div class="grid">${list.map(productCard).join('')}</div>`
       : `<div class="empty">No products found.</div>`}
   `;
   bindCardEvents();
+  if (showHero) initCarousel();
+}
+
+/* ---------- HERO CAROUSEL ---------- */
+let carouselTimer = null;
+let carouselIdx = 0;
+
+function carouselMarkup() {
+  const slides = Store.slides;
+  if (!slides || !slides.length) {
+    // fall back to the simple banner if no slides configured
+    const s = Store.settings;
+    return `<div class="banner"><h2>${s.tagline}</h2><p>${s.bannerText}</p></div>`;
+  }
+  return `
+    <div class="carousel" id="carousel">
+      <div class="carousel-track" id="carTrack">
+        ${slides.map(sl => `
+          <div class="carousel-slide" ${sl.link ? `data-slidecat="${sl.link}"` : ''}>
+            <img src="${sl.img}" alt="${sl.heading || ''}">
+            <div class="carousel-caption">
+              ${sl.heading ? `<h2>${sl.heading}</h2>` : ''}
+              ${sl.text ? `<p>${sl.text}</p>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>
+      ${slides.length > 1 ? `
+        <button class="carousel-arrow prev" id="carPrev" aria-label="Previous">&#10094;</button>
+        <button class="carousel-arrow next" id="carNext" aria-label="Next">&#10095;</button>
+        <div class="carousel-dots" id="carDots">
+          ${slides.map((_, i) => `<button data-dot="${i}" aria-label="Slide ${i + 1}"></button>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+function initCarousel() {
+  const track = $('#carTrack');
+  if (!track) return;
+  const count = Store.slides.length;
+  carouselIdx = 0;
+  clearInterval(carouselTimer);
+
+  const go = i => {
+    carouselIdx = (i + count) % count;
+    track.style.transform = `translateX(-${carouselIdx * 100}%)`;
+    $$('#carDots button').forEach((d, di) => d.classList.toggle('active', di === carouselIdx));
+  };
+  const next = () => go(carouselIdx + 1);
+  const prev = () => go(carouselIdx - 1);
+  const restart = () => { clearInterval(carouselTimer); if (count > 1) carouselTimer = setInterval(next, 4000); };
+
+  go(0);
+  restart();
+
+  if (count > 1) {
+    $('#carNext').onclick = () => { next(); restart(); };
+    $('#carPrev').onclick = () => { prev(); restart(); };
+    $$('#carDots button').forEach(d => d.onclick = () => { go(+d.dataset.dot); restart(); });
+  }
+
+  // click a slide to jump to its linked category
+  $$('[data-slidecat]').forEach(el => el.onclick = () => {
+    activeCategory = el.dataset.slidecat;
+    searchTerm = '';
+    renderHome();
+  });
+
+  // swipe support on touch devices
+  let startX = null;
+  track.ontouchstart = e => { startX = e.touches[0].clientX; };
+  track.ontouchend = e => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); restart(); }
+    startX = null;
+  };
 }
 
 function bindCardEvents() {
