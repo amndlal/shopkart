@@ -1,11 +1,11 @@
 {
-  "name": "ShopKart",
-  "short_name": "ShopKart",
+  "name": "Aura Shopping",
+  "short_name": "Aura Shopping",
   "description": "A free, self-hosted shopping app you fully control.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2874f0",
+  "theme_color": "#1a1a2e",
   "icons": [
     {
       "src": "icon.svg",

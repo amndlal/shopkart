@@ -230,7 +230,7 @@ const Admin = {
   /* ---- settings ---- */
   saveSettings() {
     Store.updateSettings({
-      storeName: $('#setName').value || 'ShopKart',
+      storeName: $('#setName').value || 'Aura Shopping',
       themeColor: $('#setColor').value,
       tagline: $('#setTag').value,
       bannerText: $('#setBanner').value,
