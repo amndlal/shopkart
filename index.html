@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopKart</title>
+  <meta name="theme-color" content="#2874f0" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="header-inner">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu">&#9776;</button>
+      <a href="#" class="logo" id="logoBtn">
+        <span class="logo-main" id="logoMain">ShopKart</span>
+        <span class="logo-sub">Explore <em>Plus</em></span>
+      </a>
+      <form class="search" id="searchForm">
+        <input type="text" id="searchInput" placeholder="Search for products, brands and more" autocomplete="off" />
+        <button type="submit" class="search-btn" aria-label="Search">&#128269;</button>
+      </form>
+      <button class="icon-btn header-link" id="wishlistBtn">&#9825; <span class="hide-sm">Wishlist</span></button>
+      <button class="icon-btn header-link" id="cartBtn">
+        &#128722; <span class="hide-sm">Cart</span>
+        <span class="badge" id="cartBadge">0</span>
+      </button>
+      <button class="icon-btn header-link" id="adminBtn">&#9881; <span class="hide-sm">Admin</span></button>
+    </div>
+    <nav class="catbar" id="catbar"></nav>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main id="view"></main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <p id="footerText">ShopKart — built with ❤️. Free & open source.</p>
+    <p class="footer-sub">All data is stored locally in your browser. Use Admin → Export to back up your catalog.</p>
+  </footer>
+
+  <!-- ============ CART DRAWER ============ -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="cartDrawer">
+    <div class="drawer-head">
+      <h3>My Cart</h3>
+      <button class="icon-btn" id="closeCart">&times;</button>
+    </div>
+    <div class="drawer-body" id="cartItems"></div>
+    <div class="drawer-foot">
+      <div class="cart-total"><span>Total</span><strong id="cartTotal">₹0</strong></div>
+      <button class="btn-primary block" id="checkoutBtn">Place Order</button>
+    </div>
+  </aside>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/store.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () =>
+        navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>
